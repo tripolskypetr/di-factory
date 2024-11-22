@@ -1,11 +1,10 @@
 const bindMethods = (instance: Record<string, unknown>) => {
-  Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).forEach(
-    (key) => {
-      instance[key] = typeof instance[key] === "function"
+  Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).forEach((key) => {
+    instance[key] =
+      typeof instance[key] === "function"
         ? instance[key].bind(instance)
         : instance[key];
-    }
-  );
+  });
 };
 
 type FactoryActivator<ClassType extends new (...args: any[]) => any> = {
@@ -15,12 +14,10 @@ type FactoryActivator<ClassType extends new (...args: any[]) => any> = {
 export const factory =
   <ClassType extends new (...args: any[]) => any>(ClassCtor: ClassType) =>
   (...args: ConstructorParameters<ClassType>): FactoryActivator<ClassType> => {
-    class FactoryClass {
-      constructor() {
-        const self = new ClassCtor(...args);
-        Object.setPrototypeOf(this, self);
-        bindMethods(self);
-      }
+    function FactoryClass() {
+      const self = new ClassCtor(...args);
+      bindMethods(self);
+      return self;
     }
     return FactoryClass as unknown as FactoryActivator<ClassType>;
   };
