@@ -1,12 +1,3 @@
-const bindMethods = (instance: Record<string, unknown>) => {
-  Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).forEach((key) => {
-    instance[key] =
-      typeof instance[key] === "function"
-        ? instance[key].bind(instance)
-        : instance[key];
-  });
-};
-
 type FactoryActivator<ClassType extends new (...args: any[]) => any> = {
   new (): InstanceType<ClassType>;
 } & Omit<ClassType, "prototype">;
@@ -16,8 +7,6 @@ export const factory =
   (...args: ConstructorParameters<ClassType>): FactoryActivator<ClassType> => {
 
     const self = new ClassCtor(...args);
-
-    bindMethods(self);
 
     function ClassActivator() {
       return {};
