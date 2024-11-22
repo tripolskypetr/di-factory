@@ -14,12 +14,20 @@ type FactoryActivator<ClassType extends new (...args: any[]) => any> = {
 export const factory =
   <ClassType extends new (...args: any[]) => any>(ClassCtor: ClassType) =>
   (...args: ConstructorParameters<ClassType>): FactoryActivator<ClassType> => {
-    function FactoryClass() {
-      const self = new ClassCtor(...args);
-      bindMethods(self);
-      return self;
+
+    class ClassReferer {
+      constructor() {
+        const self = new ClassCtor(...args);
+        bindMethods(self);
+        Object.setPrototypeOf(this, self);
+      }
+    };
+
+    function ClassActivator() {
+      return new ClassReferer();
     }
-    return FactoryClass as unknown as FactoryActivator<ClassType>;
+
+    return ClassActivator as unknown as FactoryActivator<ClassType>;
   };
 
 /*
