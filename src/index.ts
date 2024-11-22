@@ -6,13 +6,13 @@ export const factory =
   <ClassType extends new (...args: any[]) => any>(ClassCtor: ClassType) =>
   (...args: ConstructorParameters<ClassType>): FactoryActivator<ClassType> => {
 
-    const self = new ClassCtor(...args);
-
     function ClassActivator() {
-      return {};
+      const self = Reflect.construct(ClassCtor, args);
+      // @ts-ignore
+      Object.assign(this, self);
     }
 
-    ClassActivator.prototype = self;
+    ClassActivator.prototype = Object.create(ClassCtor.prototype);
 
     return ClassActivator as unknown as FactoryActivator<ClassType>;
   };
