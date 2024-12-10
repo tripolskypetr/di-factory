@@ -9,6 +9,8 @@ export const factory =
     function ClassActivator() {
       const self = Reflect.construct(ClassCtor, args);
       // @ts-ignore
+      self.init && self.init();
+      // @ts-ignore
       Object.assign(this, self);
     }
 
